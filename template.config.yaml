@@ -1,12 +1,12 @@
-used: true     # If the file has had data written to it
-name: Player   # The user's selected name
-health: 100    # The current health of the player
-mana: 100      # The current mana of the player
-level: 0       # The player's current level
-skills:        # The skills of the player
+used: true              # If the file has had data written to it
+name: Player            # The user's selected name
+health: 100             # The current health of the player
+mana: 100               # The current mana of the player
+level: 0                # The player's current level
+skills:                 # The skills of the player
   speed: 0
   agility: 0
   endurance: 0
   intelligence: 0
   charisma: 0
-current_choice_code: 0
+current_choice_code: 0  # The current choice the user is on, this is stored as an integer
