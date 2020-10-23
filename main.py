@@ -32,10 +32,8 @@ with open("config.yaml") as f:
             yaml.dump(config, f) # Saving all the data to the file
     with open("config.yaml") as f:
         player = yaml.load(f)
-        del(player['used']) # Deleting the 'used' value from this dictionary as it can not be used in the 'Player' class
+        del(player['used']) # Deleting the 'used' value from this dictionary as it can not be used in the 'Player' class when initialising it
         player['skills'] = SkillSet(**player['skills']) # Initialising the 'SkillSet' class
         player = Player(**player) # Initialising the 'Player' class
 
 print("\nAll data loaded successfully! Have fun!\n") # Nice message i've put here-
-
-print(player.get_name()) # Just for debugging

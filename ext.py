@@ -82,8 +82,10 @@ class SkillSet(object): # This is a class that stores all of the main character 
 
 
 class Entity(object): # This is a class to store the entity data, for example, a spider could be an enemy i'll implement at a later point
-    def __init__(self, name="Entity", health=100, level=0, skills=SkillSet()):
+    def __init__(self, name="Entity", health=100, mana=100, level=0, skills=SkillSet()):
         self.name = name
+        self.health = health
+        self.mana = mana
         self.level = level
         self.Skills = skills
 
@@ -114,8 +116,8 @@ class Entity(object): # This is a class to store the entity data, for example, a
 
 
 class Player(Entity): # For the 'Player' class, i am inheriting all of the previous functions from the 'Entity' class, and carrying them all here too, since the 'Player' is just a special 'Entity'
-    def __init__(self, current_choice_code=0, name="Player", health=100, level=0, skills=SkillSet()):
-        super(Player, self).__init__(name, level, skills)
+    def __init__(self, current_choice_code=0, name="Player", health=100, mana=100, level=0, skills=SkillSet()):
+        super(Player, self).__init__(name, health, mana, level, skills)
         self.current_choice_code = current_choice_code
 
     def get_current_choice(self):
