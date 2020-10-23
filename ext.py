@@ -81,7 +81,7 @@ class SkillSet(object): # This is a class that stores all of the main character 
                 yaml.dump(data, f)
 
 
-class Entity(object): # This is a class to store the entity data, for example, a spider could be an enemy i'll implement at a later point
+class Entity(object): # This is a class to store the entity data, for example, a spider could be an enemy i'll implement at a later point, or it could be an NPC, like a trader or a shop owner
     def __init__(self, name="Entity", health=100, mana=100, level=0, skills=SkillSet()):
         self.name = name
         self.health = health
