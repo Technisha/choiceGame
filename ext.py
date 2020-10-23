@@ -117,7 +117,7 @@ class Entity(object): # This is a class to store the entity data, for example, a
 
 class Player(Entity): # For the 'Player' class, i am inheriting all of the previous functions from the 'Entity' class, and carrying them all here too, since the 'Player' is just a special 'Entity'
     def __init__(self, current_choice_code=0, name="Player", health=100, mana=100, level=0, skills=SkillSet()):
-        super(Player, self).__init__(name, health, mana, level, skills)
+        super(Player, self).__init__(name, health, mana, level, skills) # This allows me to initialise the 'Entity' class i have used as a base for the 'Player' class, to be loaded into this class's `self` value
         self.current_choice_code = current_choice_code
 
     def get_current_choice(self):
