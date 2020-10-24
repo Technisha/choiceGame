@@ -26,7 +26,7 @@ with open("config.yaml") as f:
                 "intelligence":0,
                 "charisma":0
             },
-        "current_choice_code":0 # The current choice code they are on (in-game interactions)
+        "current_choice_code":"" # The current choice code they are on (in-game interactions)
         }
         with open("config.yaml", "w+") as f: # Opening 'config.yaml' in write mode to save the data
             yaml.dump(config, f) # Saving all the data to the file
@@ -37,3 +37,5 @@ with open("config.yaml") as f:
         player = Player(**player) # Initialising the 'Player' class
 
 print("\nAll data loaded successfully! Have fun!\n") # Nice message i've put here-
+
+#@require("`val` must be an integer", lambda args: isinstance(args.val, int))
