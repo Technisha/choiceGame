@@ -1,10 +1,25 @@
+from sys import stdout
+from time import sleep
+from copy import copy
+from typing import List
+
 from yaml import dump, load # This imports the 'dump' and 'load' function from the 'yaml' module
 from dpcontracts import require
+
 
 try: # This is a try and except statement, meaning that it'll try a certain piece of code, and if it errors out (in this case, if it can't import what i need), to do something else
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
+
+'''
+        for char in list(' '.join(args)):
+            stdout.write(char+sep)
+            stdout.flush()
+            sleep(0.05)
+        stdout.write("\n")
+        stdout.flush()
+'''
 
 class basicYaml(object): # I'm making a custom class using a different module (a different package that i do not own, but i am allowed to use since it's free to use)
     def __init__(self):
@@ -131,6 +146,57 @@ class Entity(object): # This is a class to store the entity data, for example, a
             data['mana'] = val
             with open('config.yaml', "w+") as f:
                 yaml.dump(data, f)
+
+class NPC(Entity):
+    @require("`name` must be a string", lambda args: isinstance(args.name, str))
+    @require("`health` must be an int", lambda args: isinstance(args.health, int))
+    @require("`mana` must be an int", lambda args: isinstance(args.mana, int))
+    @require("`level` must be an int", lambda args: isinstance(args.level, int))
+    @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
+    def __init__(self, name:str="NPC", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet()):
+        super(NPC, self).__init__(name, health, mana, level, skills)
+
+    @require("`name` must be a string", lambda args: isinstance(args.name, str))
+    def override_name(self, name:str):
+        self = copy(self)
+        self.name = name
+        return self
+
+    @require("`sep` must be a string", lambda args: isinstance(args.sep, str))
+    @require("`delay` must be an integer or a float", lambda args: isinstance(args.delay, float) or isinstance(args.delay, int))
+    def say(self, *args, sep:str="", delay=0.05):
+        for char in list("["+self.name+"] "+' '.join(args)):
+            stdout.write(char+sep)
+            stdout.flush()
+            sleep(delay)
+        stdout.write("\n")
+        stdout.flush()
+
+    @require("`question` must be a string", lambda args: isinstance(args.question, str))
+    @require("`choices` must be a dictionary/table", lambda args: isinstance(args.choices, dict))
+    @require("`delay` must be an integer or a float", lambda args: isinstance(args.delay, float) or isinstance(args.delay, int))
+    def prompt(self, question:str, choices:dict, delay:int=0.05):
+        self.say(question, delay=delay)
+        a = []
+        t = choices
+        for key in choices:
+            a.append(key+": "+choices[key])
+        choices = a
+        del(a)
+        for char in list('\n'.join(choices)):
+            stdout.write(char)
+            stdout.flush()
+            sleep(delay)
+        stdout.write("\n")
+        stdout.flush()
+        while True:
+            res = input()
+            if res in t:
+                del(t)
+                break
+            self.say("That isn't a valid choice, please enter a VALID choice this time.")
+            self.say(question, delay=delay)
+        return res
 
 
 class Player(Entity): # For the 'Player' class, i am inheriting all of the previous functions from the 'Entity' class, and carrying them all here too, since the 'Player' is just a special 'Entity'

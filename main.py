@@ -1,6 +1,7 @@
+from time import sleep
 from dpcontracts import PreconditionError
 
-from ext import yaml, Player, SkillSet # Importing the classes that'll be used in this file
+from ext import NPC, yaml, Player, SkillSet # Importing the classes that'll be used in this file
 
 try: # In this try and except block, i'm checking if 'config.yaml' exists, if it doesn't, then it'll be created
     with open("config.yaml") as f: f.close()
@@ -45,6 +46,20 @@ with open("config.yaml") as f:
                 raise SystemExit()
         player = Player(**player) # Initialising the 'Player' class
 
-print("\nAll data loaded successfully! Have fun!\n") # Nice message i've put here-
+GlitchTrap = NPC(name="GlitchTrap", health=9223372036854775807, mana=9223372036854775807, level=9223372036854775807, skills=SkillSet(speed=9223372036854775807, agility=9223372036854775807, endurance=9223372036854775807, intelligence=9223372036854775807, charisma=9223372036854775807))
 
-#@require("`val` must be an integer", lambda args: isinstance(args.val, int))
+unknown = NPC(name="???")
+
+print()
+unknown.say("All data loaded successfully! Have fun!\n") # Nice message i've put here-
+
+if player.get_current_choice() == '':
+    BitchTrap = GlitchTrap.override_name("BitchTrap")
+    BitchTrap.say("Welcome! I am {}! And i shall be the one narrating your story!-".format(GlitchTrap.get_name()))
+    BitchTrap.say(". . .", delay=0.1)
+    BitchTrap.say("Why is my name registered as `{}`...?".format(BitchTrap.get_name()))
+    del(BitchTrap)
+    unknown.say("*A faint clicking noise can be heard behind you*")
+    GlitchTrap.say("There we go! That's fixed! (Fuck you Technisha-)")
+    GlitchTrap.say("Anyway, welcome {}, I am {}, and i will be narrating your story, but before we start, let's just check if you're actually listening...".format(player.get_name(), GlitchTrap.get_name()))
+    GlitchTrap.prompt("Are you listening?", {"1":"Yup! Of course I am!", "2":"Nah, i nodded off as soon as you said your name-"})
