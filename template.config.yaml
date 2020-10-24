@@ -9,4 +9,4 @@ skills:                 # The skills of the player
   endurance: 0
   intelligence: 0
   charisma: 0
-current_choice_code: 0  # The current choice the user is on, this is stored as an integer
+current_choice_code: ""  # The current choice the user is on, this is stored as a string

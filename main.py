@@ -1,3 +1,5 @@
+from dpcontracts import PreconditionError
+
 from ext import yaml, Player, SkillSet # Importing the classes that'll be used in this file
 
 try: # In this try and except block, i'm checking if 'config.yaml' exists, if it doesn't, then it'll be created
@@ -33,7 +35,14 @@ with open("config.yaml") as f:
     with open("config.yaml") as f:
         player = yaml.load(f)
         del(player['used']) # Deleting the 'used' value from this dictionary as it can not be used in the 'Player' class when initialising it
-        player['skills'] = SkillSet(**player['skills']) # Initialising the 'SkillSet' class
+        error = True
+        while error: # I create this loop to catch other potential errors that may have a similar issue
+            try:
+                player['skills'] = SkillSet(**player['skills']) # Initialising the 'SkillSet' class
+                error = False
+            except PreconditionError: # Here the 'PreconditionError' is catched so i can handle it without the program breaking
+                print("There seems to be an issue with the config... Please fix it manually by checking the example config, which can be found here: https://lop.si/lebe")
+                raise SystemExit()
         player = Player(**player) # Initialising the 'Player' class
 
 print("\nAll data loaded successfully! Have fun!\n") # Nice message i've put here-
