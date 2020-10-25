@@ -29,13 +29,16 @@ with open("config.yaml") as f:
                 "intelligence":0,
                 "charisma":0
             },
-        "current_choice_code":"" # The current choice code they are on (in-game interactions)
+            "current_choice_code":"", # The current choice code they are on (in-game interactions)
+            "relations":{
+                "glitchtrap":0
+            }
         }
         with open("config.yaml", "w+") as f: # Opening 'config.yaml' in write mode to save the data
             yaml.dump(config, f) # Saving all the data to the file
     with open("config.yaml") as f:
         player = yaml.load(f)
-        del(player['used']) # Deleting the 'used' value from this dictionary as it can not be used in the 'Player' class when initialising it
+        del(player['used'], player['relations']) # Deleting the 'used' and 'relationships' keys from this dictionary as it can not be used in the 'Player' class when initialising it
         error = True
         while error: # I create this loop to catch other potential errors that may have a similar issue
             try:

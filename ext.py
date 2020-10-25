@@ -156,6 +156,24 @@ class NPC(Entity):
     def __init__(self, name:str="NPC", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet()):
         super(NPC, self).__init__(name, health, mana, level, skills)
 
+    def get_relation_level(self):
+        with open('config.yaml') as f:
+            data = yaml.load(f)
+            relation_level = data['relations'].get(self.name.lower(), None)
+            if relation_level == None:
+                with open("config.yaml", "w+") as f:
+                    data['relations'][self.name.lower()] = 0
+                    yaml.dump(data, f)
+            return data['relations'][self.name.lower()]
+
+    @require("`val` must be an integer", lambda args: isinstance(args.val, int))
+    def set_relation_level(self, val:int=1):
+        with open('config.yaml') as f:
+            data = yaml.load(f)
+            data['relations'][self.name.lower()] = val
+            with open('config.yaml', "w+") as f:
+                yaml.dump(data, f)
+
     @require("`name` must be a string", lambda args: isinstance(args.name, str))
     def override_name(self, name:str):
         self = copy(self)
