@@ -1,7 +1,7 @@
 from sys import stdout
 from time import sleep
 from copy import copy
-from typing import List
+from random import randrange
 
 from yaml import dump, load # This imports the 'dump' and 'load' function from the 'yaml' module
 from dpcontracts import require
@@ -32,6 +32,14 @@ class basicYaml(object): # I'm making a custom class using a different module (a
         return load(*args, **kwargs, Loader=Loader)
 
 yaml = basicYaml() # Making an instance of my class, with the name 'yaml'
+
+class MoveSet(object):
+    def __init__(self, **kwargs):
+        if kwargs == {}:
+            kwargs = {"punch":range(0, 1)}
+        self.moves = kwargs
+        for move in self.moves:
+            setattr(self, move, lambda: randrange(self.moves[move].start, self.moves[move].stop))
 
 class SkillSet(object): # This is a class that stores all of the main character stats that will be needed at a later point, i've made functions (basically commands) that'll allow me to fetch/retrive/get the values, or set it instead.
     @require("`speed` must be an integer", lambda args: isinstance(args.speed, int)) # 'require' is a decorator from the 'dpcontracts' module, which allows me to enforce a certain type on any parameter on any function i wont, like how i'm doing it here
@@ -147,6 +155,7 @@ class Entity(object): # This is a class to store the entity data, for example, a
             with open('config.yaml', "w+") as f:
                 yaml.dump(data, f)
 
+
 class NPC(Entity):
     @require("`name` must be a string", lambda args: isinstance(args.name, str))
     @require("`health` must be an int", lambda args: isinstance(args.health, int))
@@ -167,7 +176,7 @@ class NPC(Entity):
             return data['relations'][self.name.lower()]
 
     @require("`val` must be an integer", lambda args: isinstance(args.val, int))
-    def set_relation_level(self, val:int=1):
+    def set_relation_level(self, val:int):
         with open('config.yaml') as f:
             data = yaml.load(f)
             data['relations'][self.name.lower()] = val
@@ -193,7 +202,7 @@ class NPC(Entity):
     @require("`question` must be a string", lambda args: isinstance(args.question, str))
     @require("`choices` must be a dictionary/table", lambda args: isinstance(args.choices, dict))
     @require("`delay` must be an integer or a float", lambda args: isinstance(args.delay, float) or isinstance(args.delay, int))
-    def prompt(self, question:str, choices:dict, delay:int=0.05):
+    def prompt(self, question:str, choices:dict, delay:int=0.05): # This is a function that allows me to the user's input so i can get a choice they have selected
         self.say(question, delay=delay)
         a = []
         t = choices
@@ -224,9 +233,11 @@ class Player(Entity): # For the 'Player' class, i am inheriting all of the previ
     @require("`mana` must be an int", lambda args: isinstance(args.mana, int))
     @require("`level` must be an int", lambda args: isinstance(args.level, int))
     @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
-    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet()):
+    @require("`moves` must be an instance of the 'MoveSet' class", lambda args: isinstance(args.moves, MoveSet))
+    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet()=MoveSet()):
         super(Player, self).__init__(name, health, mana, level, skills) # This allows me to initialise the 'Entity' class i have used as a base for the 'Player' class, to be loaded into this class's `self` value
         self.current_choice_code = current_choice_code
+        self.Moves = moves
 
     def get_current_choice(self):
         return self.current_choice_code
