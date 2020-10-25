@@ -1,7 +1,7 @@
 from time import sleep
 from dpcontracts import PreconditionError
 
-from ext import yaml, Player, SkillSet, MoveSet # Importing the classes that'll be used in this file
+from ext import yaml, Entity, Player, Enemy, SkillSet, MoveSet # Importing the classes that'll be used in this file
 from ext.entities import GlitchTrap, unknown
 
 try: # In this try and except block, i'm checking if 'config.yaml' exists, if it doesn't, then it'll be created
@@ -31,7 +31,16 @@ with open("config.yaml") as f:
                 "charisma":0
             },
             "moves":{
-                "sword_slash":range(1, 3)
+                "sword_slash":{
+                    "target":Enemy,
+                    "range":range(1, 3),
+                    "mana_required":0
+                },
+                "heal":{
+                    "target":Player,
+                    "range":range(10, 12),
+                    "mana_required":5
+                }
             },
             "current_choice_code":"", # The current choice code they are on (in-game interactions)
             "relations":{
@@ -47,7 +56,7 @@ with open("config.yaml") as f:
         while error: # I create this loop to catch other potential errors that may have a similar issue
             try:
                 player['skills'] = SkillSet(**player['skills']) # Initialising the 'SkillSet' class
-                player['moves'] = MoveSet(**player['moves']) # Initialising the 'MoveSet' class
+                player['moves'] = MoveSet(Entity, **player['moves']) # Initialising the 'MoveSet' class
                 error = False
             except PreconditionError: # Here the 'PreconditionError' is catched so i can handle it without the program breaking
                 print("There seems to be an issue with the config... Please fix it manually by checking the example config, which can be found here: https://lop.si/lebe")
@@ -76,7 +85,8 @@ if player.get_current_choice() == '': # The first actual in-game interaction
     elif res == "2":
         GlitchTrap.say("...", delay=0.1)
         GlitchTrap.set_relation_level(GlitchTrap.get_relation_level()-1)
-        unknown.say("*{} does not like you, great job on pissing him off! (I'm definitely pissing him off with this later-)*".format(GlitchTrap.get_name()))
-        GlitchTrap.say("Anyway...", delay=0.2)
+        unknown.say("*{} does not like you, great job on pissing him off already! (I'm definitely annoying him with this later-)*".format(GlitchTrap.get_name()))
+        GlitchTrap.say("(I didn't sign up for this goddamn it!)")
+        GlitchTrap.say(" Anyway...", delay=0.2)
+    GlitchTrap.say("Now let's continue, why don't you try fighting that slime infront of you? It seems relatively easy for a new adventurer like yourself.")
 
-    GlitchTrap.say("Now let's continue, why don't you try fighting that slime infront of you? It seems relatively easy for a new adventurer like yourself")

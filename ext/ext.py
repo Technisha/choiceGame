@@ -6,7 +6,6 @@ from random import randrange
 from yaml import dump, load # This imports the 'dump' and 'load' function from the 'yaml' module
 from dpcontracts import require
 
-
 try: # This is a try and except statement, meaning that it'll try a certain piece of code, and if it errors out (in this case, if it can't import what i need), to do something else
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -33,13 +32,6 @@ class basicYaml(object): # I'm making a custom class using a different module (a
 
 yaml = basicYaml() # Making an instance of my class, with the name 'yaml'
 
-class MoveSet(object):
-    def __init__(self, **kwargs):
-        if kwargs == {}:
-            kwargs = {"punch":range(0, 1)}
-        self.moves = kwargs
-        for move in self.moves:
-            setattr(self, move, lambda: randrange(self.moves[move].start, self.moves[move].stop))
 
 class SkillSet(object): # This is a class that stores all of the main character stats that will be needed at a later point, i've made functions (basically commands) that'll allow me to fetch/retrive/get the values, or set it instead.
     @require("`speed` must be an integer", lambda args: isinstance(args.speed, int)) # 'require' is a decorator from the 'dpcontracts' module, which allows me to enforce a certain type on any parameter on any function i wont, like how i'm doing it here
@@ -155,40 +147,6 @@ class Entity(object): # This is a class to store the entity data, for example, a
             with open('config.yaml', "w+") as f:
                 yaml.dump(data, f)
 
-
-class NPC(Entity):
-    @require("`name` must be a string", lambda args: isinstance(args.name, str))
-    @require("`health` must be an int", lambda args: isinstance(args.health, int))
-    @require("`mana` must be an int", lambda args: isinstance(args.mana, int))
-    @require("`level` must be an int", lambda args: isinstance(args.level, int))
-    @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
-    def __init__(self, name:str="NPC", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet()):
-        super(NPC, self).__init__(name, health, mana, level, skills)
-
-    def get_relation_level(self):
-        with open('config.yaml') as f:
-            data = yaml.load(f)
-            relation_level = data['relations'].get(self.name.lower(), None)
-            if relation_level == None:
-                with open("config.yaml", "w+") as f:
-                    data['relations'][self.name.lower()] = 0
-                    yaml.dump(data, f)
-            return data['relations'][self.name.lower()]
-
-    @require("`val` must be an integer", lambda args: isinstance(args.val, int))
-    def set_relation_level(self, val:int):
-        with open('config.yaml') as f:
-            data = yaml.load(f)
-            data['relations'][self.name.lower()] = val
-            with open('config.yaml', "w+") as f:
-                yaml.dump(data, f)
-
-    @require("`name` must be a string", lambda args: isinstance(args.name, str))
-    def override_name(self, name:str):
-        self = copy(self)
-        self.name = name
-        return self
-
     @require("`sep` must be a string", lambda args: isinstance(args.sep, str))
     @require("`delay` must be an integer or a float", lambda args: isinstance(args.delay, float) or isinstance(args.delay, int))
     def say(self, *args, sep:str="", delay=0.05):
@@ -226,7 +184,73 @@ class NPC(Entity):
         return res
 
 
-class Player(Entity): # For the 'Player' class, i am inheriting all of the previous functions from the 'Entity' class, and carrying them all here too, since the 'Player' is just a special 'Entity'
+class MoveSet(object):
+    def __init__(self, entity, **kwargs):
+        if kwargs == {}:
+            kwargs = {"punch":range(0, 1)}
+        self.entity = entity
+        self.moves = kwargs
+        for move in self.moves:
+            setattr(self, move, self.gen_move_func(move))
+
+    def gen_move_func(self, move):
+        # self.moves[move]['mana_required']
+        def func():
+            deal = randrange(self.moves[move]['range'].start, self.moves[move]['range'].stop)
+            if isinstance(self.moves[move]['target'], self.entity):
+                pass
+            pass
+        return func
+
+
+class NPC(Entity):
+    @require("`name` must be a string", lambda args: isinstance(args.name, str))
+    @require("`health` must be an int", lambda args: isinstance(args.health, int))
+    @require("`mana` must be an int", lambda args: isinstance(args.mana, int))
+    @require("`level` must be an int", lambda args: isinstance(args.level, int))
+    @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
+    def __init__(self, name:str="NPC", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet()):
+        super(NPC, self).__init__(name, health, mana, level, skills)
+
+    def get_relation_level(self):
+        with open('config.yaml') as f:
+            data = yaml.load(f)
+            relation_level = data['relations'].get(self.name.lower(), None)
+            if relation_level == None:
+                with open("config.yaml", "w+") as f:
+                    data['relations'][self.name.lower()] = 0
+                    yaml.dump(data, f)
+            return data['relations'][self.name.lower()]
+
+    @require("`val` must be an integer", lambda args: isinstance(args.val, int))
+    def set_relation_level(self, val:int):
+        with open('config.yaml') as f:
+            data = yaml.load(f)
+            data['relations'][self.name.lower()] = val
+            with open('config.yaml', "w+") as f:
+                yaml.dump(data, f)
+
+    @require("`name` must be a string", lambda args: isinstance(args.name, str))
+    def override_name(self, name:str):
+        self = copy(self)
+        self.name = name
+        return self
+
+
+class Enemy(Entity):
+    @require("`name` must be a string", lambda args: isinstance(args.name, str))
+    @require("`health` must be an int", lambda args: isinstance(args.health, int))
+    @require("`mana` must be an int", lambda args: isinstance(args.mana, int))
+    @require("`level` must be an int", lambda args: isinstance(args.level, int))
+    @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
+    @require("`moves` must be an instance of the 'MoveSet' class", lambda args: isinstance(args.moves, MoveSet))
+    def __init__(self, name:str="Enemy", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity)):
+        super(Enemy, self).__init__(name, health, mana, level, skills)
+        moves.Entity = self
+        self.Moves = moves
+
+
+class Player(NPC): # For the 'Player' class, i am inheriting all of the previous functions from the 'NPC' class, and carrying them all here too, since the 'Player' is just a special 'NPC'
     @require("`current_choice_code` must be a string", lambda args: isinstance(args.current_choice_code, str))
     @require("`name` must be a string", lambda args: isinstance(args.name, str))
     @require("`health` must be an int", lambda args: isinstance(args.health, int))
@@ -234,7 +258,7 @@ class Player(Entity): # For the 'Player' class, i am inheriting all of the previ
     @require("`level` must be an int", lambda args: isinstance(args.level, int))
     @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
     @require("`moves` must be an instance of the 'MoveSet' class", lambda args: isinstance(args.moves, MoveSet))
-    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet()=MoveSet()):
+    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity)):
         super(Player, self).__init__(name, health, mana, level, skills) # This allows me to initialise the 'Entity' class i have used as a base for the 'Player' class, to be loaded into this class's `self` value
         self.current_choice_code = current_choice_code
         self.Moves = moves
@@ -250,3 +274,6 @@ class Player(Entity): # For the 'Player' class, i am inheriting all of the previ
             data['current_choice_code'] = val
             with open('config.yaml', "w+") as f:
                 yaml.dump(data, f)
+
+if __name__=="__main__":
+    pass
