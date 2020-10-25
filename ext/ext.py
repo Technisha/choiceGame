@@ -185,7 +185,7 @@ class Entity(object): # This is a class to store the entity data, for example, a
 
 
 class MoveSet(object):
-    def __init__(self, entity, **kwargs):
+    def __init__(self, entity:Entity=Entity(), **kwargs):
         if kwargs == {}:
             kwargs = {"punch":range(0, 1)}
         self.entity = entity
@@ -274,6 +274,3 @@ class Player(NPC): # For the 'Player' class, i am inheriting all of the previous
             data['current_choice_code'] = val
             with open('config.yaml', "w+") as f:
                 yaml.dump(data, f)
-
-if __name__=="__main__":
-    pass
