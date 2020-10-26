@@ -200,8 +200,8 @@ class MoveSet(object):
             if isinstance(target, self.moves[move]['target']):
                 self.entity.set_health(self.entity.get_health()+deal)
                 return
-            else:
-                target.set_health(target.get_health()-deal)
+            target.set_health(target.get_health()-deal)
+            return
         return func
 
 
