@@ -195,11 +195,13 @@ class MoveSet(object):
 
     def gen_move_func(self, move):
         # self.moves[move]['mana_required']
-        def func():
+        def func(target):
             deal = randrange(self.moves[move]['range'].start, self.moves[move]['range'].stop)
-            if isinstance(self.moves[move]['target'], self.entity):
-                pass
-            pass
+            if isinstance(target, self.moves[move]['target']):
+                self.entity.set_health(self.entity.get_health()+deal)
+                return
+            else:
+                target.set_health(target.get_health()-deal)
         return func
 
 
@@ -244,13 +246,14 @@ class Enemy(Entity):
     @require("`level` must be an int", lambda args: isinstance(args.level, int))
     @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
     @require("`moves` must be an instance of the 'MoveSet' class", lambda args: isinstance(args.moves, MoveSet))
-    def __init__(self, name:str="Enemy", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity)):
+    def __init__(self, name:str="Enemy", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity())):
         super(Enemy, self).__init__(name, health, mana, level, skills)
-        moves.Entity = self
+        if isinstance(moves.entity, Entity):
+            moves.entity = self
         self.Moves = moves
 
 
-class Player(NPC): # For the 'Player' class, i am inheriting all of the previous functions from the 'NPC' class, and carrying them all here too, since the 'Player' is just a special 'NPC'
+class Player(Entity): # For the 'Player' class, i am inheriting all of the previous functions from the 'Entity' class, and carrying them all here too, since the 'Player' is just a special 'Entity'
     @require("`current_choice_code` must be a string", lambda args: isinstance(args.current_choice_code, str))
     @require("`name` must be a string", lambda args: isinstance(args.name, str))
     @require("`health` must be an int", lambda args: isinstance(args.health, int))
@@ -258,7 +261,8 @@ class Player(NPC): # For the 'Player' class, i am inheriting all of the previous
     @require("`level` must be an int", lambda args: isinstance(args.level, int))
     @require("`skills` must be an instance of the 'SkillSet' class", lambda args: isinstance(args.skills, SkillSet))
     @require("`moves` must be an instance of the 'MoveSet' class", lambda args: isinstance(args.moves, MoveSet))
-    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity)):
+    def __init__(self, current_choice_code:str="", name:str="Player", health:int=100, mana:int=100, level:int=0, skills:SkillSet=SkillSet(), moves:MoveSet=MoveSet(Entity())):
+        moves.entity = self
         super(Player, self).__init__(name, health, mana, level, skills) # This allows me to initialise the 'Entity' class i have used as a base for the 'Player' class, to be loaded into this class's `self` value
         self.current_choice_code = current_choice_code
         self.Moves = moves

@@ -3,6 +3,7 @@ from dpcontracts import PreconditionError
 
 from ext import yaml, Entity, Player, Enemy, SkillSet, MoveSet # Importing the classes that'll be used in this file
 from ext.entities import GlitchTrap, unknown
+from ext.enemies import Slime
 
 try: # In this try and except block, i'm checking if 'config.yaml' exists, if it doesn't, then it'll be created
     with open("config.yaml") as f: f.close()
@@ -66,6 +67,14 @@ with open("config.yaml") as f:
 print()
 unknown.say("All data loaded successfully! Have fun!\n") # Nice message i've put here-
 
+slime = Slime() # Creating the slime Enemy
+
+print(slime.get_health()) # Just doing some debugging
+player.Moves.sword_slash(slime)
+print(slime.get_health())
+raise SystemExit
+
+'''
 if player.get_current_choice() == '': # The first actual in-game interaction
     BitchTrap = GlitchTrap.override_name("BitchTrap")
     BitchTrap.say("Welcome! I am {}! And i shall be the one narrating your stor-".format(GlitchTrap.get_name()))
@@ -87,6 +96,6 @@ if player.get_current_choice() == '': # The first actual in-game interaction
         GlitchTrap.set_relation_level(GlitchTrap.get_relation_level()-1)
         unknown.say("*{} does not like you, great job on pissing him off already! (I'm definitely annoying him with this later-)*".format(GlitchTrap.get_name()))
         GlitchTrap.say("(I didn't sign up for this goddamn it!)")
-        GlitchTrap.say(" Anyway...", delay=0.2)
+        GlitchTrap.say(" Anyway...", delay=0.15)
     GlitchTrap.say("Now let's continue, why don't you try fighting that slime infront of you? It seems relatively easy for a new adventurer like yourself.")
-
+'''
