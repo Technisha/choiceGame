@@ -6,6 +6,7 @@ lib/
 site-packages/
 __pycache__/
 ext/__pycache__/
+.idea/
 
 # Files to not save to the repo
 # NOTE: 'lib64' is a symlink, meaning it's a reference/pointer to the 'lib' folder

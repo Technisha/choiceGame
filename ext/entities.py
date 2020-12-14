@@ -1,5 +1,6 @@
-from .ext import NPC, SkillSet
+from .ext import Entity, NPC, SkillSet, inf
 
-unknown = NPC(name="???")
+unknown = Entity(name="???")
 
-GlitchTrap = NPC(name="GlitchTrap", health=9223372036854775807, mana=9223372036854775807, level=9223372036854775807, skills=SkillSet(speed=9223372036854775807, agility=9223372036854775807, endurance=9223372036854775807, intelligence=9223372036854775807, charisma=9223372036854775807))
+
+GlitchTrap = NPC(name="GlitchTrap", health=inf, mana=inf, level=inf, skills=SkillSet(speed=inf, agility=inf, endurance=inf, intelligence=inf, charisma=inf))

@@ -1,0 +1,2 @@
+class NotEnoughMana(ValueError):
+    pass
